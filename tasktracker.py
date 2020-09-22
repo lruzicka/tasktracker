@@ -47,7 +47,6 @@ class Diary:
                 diary_data = diary.readlines()
                 for data in diary_data:
                     self.diary.append(json.loads(data))
-                    print(data)
         except FileNotFoundError:
             self.diary = []
 
@@ -62,47 +61,47 @@ class Diary:
 
     def return_tasks(self, timestamp=None, typ=None, group=None, qa=None, keywords=None, link=None):
         specs = []
-        results = self.diary
-        round_results = []
+        results = self.diary[:]
+        part = []
         if timestamp:
-            specs.append("timestamp")
-        if typ:
-            specs.append("typ")
-        if group:
-            specs.append("group")
-        if qa:
-            specs.append("qa")
-        if keywords:
-            specs.append("keywords")
-        if link:
-            specs.append("link")
-
-        while len(specs) > 0:
-            s = specs.pop(0)
             for task in results:
-                if s == "typ" and typ in task["type_of_task"]:
-                    round_results.append(task)
-                elif s == "group" and group in task["task_class"]:
-                    round_results.append(task)
-                elif s == "qa" and qa in task["fedora_qa_group"]:
-                    round_results.append(task)
-                elif s == "keywords":
-                    keywords = keywords.split(',')
-                    gotores = False
-                    for k in keywords:
-                        if k in task["keywords"]:
-                            gotores = True
-                    if gotores:
-                        round_results.append(task)
-                elif s == "link" and link in task["link_to_task"]:
-                    round_results.append(task)
-                elif s == "timestamp" and int(task["time_of_creation"]) >= int(timestamp):
-                    round_results.append(task)
-            results = round_results
-        if results:
-            return results
-        else:
-            return []
+                if timestamp < task["time_of_creation"]:
+                    part.append(task)
+            results = part[:]
+            part = []
+        if typ:
+            for task in results:
+                if typ in task["type_of_task"]:
+                    part.append(task)
+            results = part[:]
+            part = []
+        if group:
+            for task in results:
+                if group in task["task_class"]:
+                    part.append(task)
+            results = part[:]
+            part = []
+        if qa:
+            for task in results:
+                if qa in task["fedora_qa_group"]:
+                    part.append(task)
+            results = part[:]
+            part = []
+        if keywords:
+            keywords = keywords.split(',')
+            for task in results:
+                for key in keywords:
+                    if key in task["keywords"]:
+                        part.append(task)
+            results = part[:]
+            part = []
+        if link:
+            for task in results:
+                if link in task["link_to_task"]:
+                    part.append(task)
+            results = part[:]
+            part = []
+        return results
 
 class Entry:
     def __init__(self):
