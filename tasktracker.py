@@ -194,7 +194,7 @@ def main():
         else:
             tasks = diary.diary
         for t in tasks:
-            print(t)
+            print(f"- {t['description']} ({t['link_to_task']})")
     else:
         print('Action was not recognized, quitting.')
 
