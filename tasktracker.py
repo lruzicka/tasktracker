@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 import time
+import sys
 
 class Parser:
     def __init__(self):
@@ -155,7 +156,11 @@ def unpack_link(link):
 
 def main():
     clock = Timer()
-    diary = Diary('completed_tasks')
+    try:
+        datafile = sys.argv[1]
+    except IndexError:
+        datafile = 'completed_tasks'
+    diary = Diary(datafile)
     activity = input("What to do? (sHow/Save): ") or "S"
 
     if activity == "S":
