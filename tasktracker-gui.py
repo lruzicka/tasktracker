@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import * 
@@ -37,6 +39,9 @@ def getInputBoxValue():
 	userInput = link.get()
 	return userInput
 
+def getCheckboxValue():
+	checkedOrNot = markbool.get()
+	return checkedOrNot
 
 # this is the function called when the button is clicked
 def btn_save():
@@ -59,6 +64,8 @@ root = Tk()
 root.configure(background='#F0F8FF')
 root.title('Weekly Highlights TaskTracker')
 
+markbool = tk.IntVar()
+
 # Frames - Info, Text, Buttons
 entries = Frame(root, bg='#F0F8FF')
 entries.grid(column=0,row=0, padx=5,pady=5)
@@ -74,12 +81,12 @@ search.grid(column=0, row=1, padx=5, pady=5)
 
 
 # This is the section of code which creates the a label
-Label(entries, text='Task description:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=0, sticky=(E))
-Label(entries, text='Task type:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=1, sticky=(E))
-Label(entries, text='Task Project group:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=2, sticky=(E))
-Label(entries, text='Fedora QA section:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=3, sticky=(E))
-Label(entries, text='Task Keywords:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=4, sticky=(E))
-Label(entries, text='Link to task:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=5, sticky=(E))
+Label(entries, text='Task description:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=0, sticky=(W))
+Label(entries, text='Task type:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=1, sticky=(W))
+Label(entries, text='Task Project group:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=2, sticky=(W))
+Label(entries, text='Fedora QA section:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=3, sticky=(W))
+Label(entries, text='Task Keywords:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=4, sticky=(W))
+Label(entries, text='Link to task:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=5, sticky=(W))
 
 
 # This is the section of code which creates a text input box
@@ -87,19 +94,19 @@ descrip=Entry(entries, width=50)
 descrip.grid(column=1,row=0)
 
 ttype=Entry(entries, width=50)
-ttype.grid(column=1,row=1)
+ttype.grid(column=1,row=1, sticky=(W))
 
 pgroup=Entry(entries, width=50)
-pgroup.grid(column=1,row=2)
+pgroup.grid(column=1,row=2, sticky=(W))
 
 qasection=Entry(entries, width=50)
-qasection.grid(column=1,row=3)
+qasection.grid(column=1,row=3, sticky=(W))
 
 keywords=Entry(entries, width=50)
-keywords.grid(column=1,row=4)
+keywords.grid(column=1,row=4, sticky=(W))
 
 link=Entry(entries,width=50)
-link.grid(column=1,row=5)
+link.grid(column=1,row=5, sticky=(W))
 
 
 # This is the section of code which creates a button
@@ -113,10 +120,19 @@ textfield = Text(text)
 textfield.grid(column=0, row=0)
 
 # This defines the search criteria
-Label(search, text='History units:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=0, sticky=(W, E))
-Label(search, text='Number of units:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=1, sticky=(W, E))
-Label(search, text='Markdown formatted:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=2, sticky=(W, E))
+Label(entries, text='History units:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=6, sticky=(W))
+Label(entries, text='Number of units:', bg='#F0F8FF', font=('arial', 12, 'normal')).grid(column=0,row=7, sticky=(W))
 
+# This is the section of code which creates a listbox
+unittype = Entry(entries, width=50)
+unittype.grid(column=1, row=6, sticky=(W))
+
+unitnumber = Entry(entries, width=50)
+unitnumber.grid(column=1, row=7, sticky=(W))
+
+# This is the section of code which creates a checkbox
+CheckBoxOne=Checkbutton(entries, text='Markdown', variable=markbool, bg='#F0F8FF', font=('arial', 12, 'normal'))
+CheckBoxOne.grid(column=1, row=8, pady=5, sticky=(W))
 
 root.mainloop()
 
