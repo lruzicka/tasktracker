@@ -45,7 +45,21 @@ def getCheckboxValue():
 
 # this is the function called when the button is clicked
 def btn_save():
-	print('clicked')
+    value_desc = descrip.get()
+    descrip.delete(0, END)
+    value_ttype = ttype.get()
+    ttype.delete(0, END)
+    value_pgroup = pgroup.get()
+    pgroup.delete(0, END)
+    value_qasection = qasection.get()
+    qasection.delete(0, END)
+    value_keywords = keywords.get()
+    keywords.delete(0, END)
+    value_link = link.get()
+    link.delete(0, END)
+    output = [value_desc, value_ttype, value_pgroup, value_qasection, value_keywords, value_link]
+    descrip.focus()
+    print(output)
 
 
 # this is the function called when the button is clicked
