@@ -4,14 +4,20 @@ import datetime
 import json
 import os
 import time
+import tkinter as tk
 import sys
 
-class Parser:
-    def __init__(self):
-        pass
+class App(tk.Tk):
+    def __init__(self, master=None):
+        tkinter.Frame.__init__(self, master)
+        self.grid()
+        self.create_widgets()
+    
+    def create_widgets():
 
 class Timer:
     def __init__(self):
+        """ Inititates the method. """
         self.timestamp = time.time()
     
     def return_start_time(self, count, unit):
@@ -41,6 +47,7 @@ class Timer:
 
 class Diary:
     def __init__(self, dfile):
+        """ Initiates the method and load the data from the given file. """
         self.dfile = dfile
         self.diary = []
         try:
@@ -52,15 +59,18 @@ class Diary:
             self.diary = []
 
     def append_file(self, entry):
+        """ Write a new entry into the data file. """
         with open(self.dfile, 'a') as diary:
             diary.write(entry)
             diary.write("\n")
 
     def show_stats(self):
+        """ Return the number of data records read from the data file. """
         count = len(self.diary)
         return count
 
     def return_tasks(self, timestamp=None, typ=None, group=None, qa=None, keywords=None, link=None):
+        """ Return the tasks from the file. Search criteria can be added. """
         specs = []
         results = self.diary[:]
         part = []
