@@ -4,11 +4,11 @@ import datetime
 import json
 import os
 import time
+import tkinter as tk
 import sys
 
-class Parser:
-    def __init__(self):
-        pass
+from tkinter import ttk
+from tkinter import * 
 
 class Timer:
     def __init__(self):
