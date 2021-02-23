@@ -177,6 +177,7 @@ def btn_save():
     dentry.create(clock.current_timestamp(), value_desc, value_ttype, value_pgroup, value_qasection, value_keywords, value_link)
     # Save into the file
     diary.append_file(dentry.json())
+    textfield.delete(1.0, END)
     textfield.insert(END, f"Task '{value_desc[:15]}...' was succesfully saved.\n")
 
 
@@ -214,12 +215,50 @@ def btn_show():
         else:
             textfield.insert(END, f"{t['description']} ({t['link_to_task']})\n")
 
+def btn_today():
+    diary = Diary(datafile)
+    markdown = markbool.get()
+    ttype.focus()
+    timecreate = "1-day"
+    timecreate = timecreate.split('-')
+    if len(timecreate) > 1:
+        timestamp = clock.return_start_time(int(timecreate[0]), timecreate[1])
+    else:
+        timestamp = clock.return_start_date(timecreate[0])
+
+    tasks = diary.return_tasks(timestamp, "", "", "", "")
+    textfield.delete(1.0, END)
+    for t in tasks:
+        if markdown == 1:
+            textfield.insert(END, f"* {t['description']} ({t['link_to_task']})\n")
+        else:
+            textfield.insert(END, f"{t['description']} ({t['link_to_task']})\n")
+
+def btn_week():
+    diary = Diary(datafile)
+    markdown = markbool.get()
+    ttype.focus()
+    timecreate = "1-week"
+    timecreate = timecreate.split('-')
+    if len(timecreate) > 1:
+        timestamp = clock.return_start_time(int(timecreate[0]), timecreate[1])
+    else:
+        timestamp = clock.return_start_date(timecreate[0])
+
+    tasks = diary.return_tasks(timestamp, "", "", "", "")
+    textfield.delete(1.0, END)
+    for t in tasks:
+        if markdown == 1:
+            textfield.insert(END, f"* {t['description']} ({t['link_to_task']})\n")
+        else:
+            textfield.insert(END, f"{t['description']} ({t['link_to_task']})\n")
+
 # this is the function called when the button is clicked
 def btn_copy():
     textcopy = textfield.get("1.0", END)
     root.clipboard_clear()
     root.clipboard_append(textcopy)
-    r.update() # now it stays on the clipboard after the window is closed
+    root.update() # now it stays on the clipboard after the window is closed
 
 root = Tk()
 
@@ -277,7 +316,9 @@ link.grid(column=1,row=5, sticky=(W))
 # This is the section of code which creates a button
 Button(buttons, text='Save task', bg='#FFAAAA', font=('arial', 12, 'normal'), command=btn_save).grid(column=0,row=0, padx=3)
 Button(buttons, text='Show tasks', bg='#AAFFAA', font=('arial', 12, 'normal'), command=btn_show).grid(column=1,row=0, padx=3)
-Button(buttons, text='Copy text', bg='#EEEEEE', font=('arial', 12, 'normal'), command=btn_copy).grid(column=2,row=0, padx=3)
+Button(buttons, text='All 1 day', bg='#AAFFFF', font=('arial', 12, 'normal'), command=btn_today).grid(column=2,row=0, padx=3)
+Button(buttons, text='All 1 week', bg='#AADDDD', font=('arial', 12, 'normal'), command=btn_week).grid(column=3,row=0, padx=3)
+Button(buttons, text='Copy text', bg='#EEEEEE', font=('arial', 12, 'normal'), command=btn_copy).grid(column=4,row=0, padx=3)
 
 
 # This defines the text field
