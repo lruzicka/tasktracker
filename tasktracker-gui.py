@@ -8,14 +8,14 @@ import sys
 
 import tkinter as tk
 from tkinter import ttk
-from tkinter import * 
+from tkinter import *
 
 class Timer:
     def __init__(self):
-        self.timestamp = time.time()
-    
+        pass
+
     def return_start_time(self, count, unit):
-        """ Returns the time from epoch calculated from the current timestamp back in time. 
+        """ Returns the time from epoch calculated from the current timestamp back in time.
 
         Takes $count of selected $unit, i.e. minute, hour, day, week, month, year. """
         periods = {
@@ -37,7 +37,7 @@ class Timer:
 
     def current_timestamp(self):
         """ Returns current timestamp. """
-        return self.timestamp
+        return time.time()
 
 class Diary:
     def __init__(self, dfile):
@@ -63,6 +63,7 @@ class Diary:
     def return_tasks(self, timestamp=None, typ=None, group=None, qa=None, keywords=None, link=None):
         specs = []
         results = self.diary[:]
+        print(results)
         part = []
         if timestamp:
             for task in results:
@@ -160,12 +161,9 @@ def btn_save():
     # Collect the date from the form
     value_desc = descrip.get()
     descrip.delete(0, END)
-    value_ttype = ttype.get()
-    ttype.delete(0, END)
-    value_pgroup = pgroup.get()
-    pgroup.delete(0, END)
-    value_qasection = qasection.get()
-    qasection.delete(0, END)
+    value_ttype = str(selected_task.get())
+    value_pgroup = str(selected_project.get())
+    value_qasection = str(selected_section.get())
     value_keywords = keywords.get()
     keywords.delete(0, END)
     value_link = link.get()
@@ -174,26 +172,27 @@ def btn_save():
     descrip.focus()
     # Create the entry
     dentry = Dentry()
-    dentry.create(clock.current_timestamp(), value_desc, value_ttype, value_pgroup, value_qasection, value_keywords, value_link)
+    timestamp = clock.current_timestamp()
+    dentry.create(timestamp, value_desc, value_ttype, value_pgroup, value_qasection, value_keywords, value_link)
     # Save into the file
     diary.append_file(dentry.json())
     textfield.delete(1.0, END)
     textfield.insert(END, f"Task '{value_desc[:15]}...' was succesfully saved.\n")
+    # Delete selected
+    selected_task.set("")
+    selected_project.set("")
+    selected_section.set("")
 
 
 # this is the function called when the button is clicked
 def btn_show():
     diary = Diary(datafile)
-    value_ttype = ttype.get()
-    ttype.delete(0, END)
-    value_pgroup = pgroup.get()
-    pgroup.delete(0, END)
-    value_qasection = qasection.get()
-    qasection.delete(0, END)
+    value_ttype = str(selected_task.get())
+    value_pgroup = str(selected_project.get())
+    value_qasection = str(selected_section.get())
     value_keywords = keywords.get()
     keywords.delete(0, END)
-    value_unit = unittype.get()
-    unittype.delete(0, END)
+    value_unit = str(selected_unit.get())
     value_number = unitnumber.get()
     unitnumber.delete(0, END)
     markdown = markbool.get()
@@ -203,11 +202,15 @@ def btn_show():
         timecreate = "01 Jan 00"
     timecreate = timecreate.split('-')
     if len(timecreate) > 1:
-        timestamp = clock.return_start_time(int(timecreate[0]), timecreate[1])
+        if not timecreate[0]:
+            # When no numbers are filled, assume 1
+            starttime = clock.return_start_time(1, timecreate[1])
+        else:
+            starttime = clock.return_start_time(int(timecreate[0]), timecreate[1])
     else:
-        timestamp = clock.return_start_date(timecreate[0])
+        starttime = clock.return_start_date(timecreate[0])
 
-    tasks = diary.return_tasks(timestamp, value_ttype, value_pgroup, value_qasection, value_keywords)
+    tasks = diary.return_tasks(starttime, value_ttype, value_pgroup, value_qasection, value_keywords)
     textfield.delete(1.0, END)
     for t in tasks:
         if markdown == 1:
@@ -222,11 +225,12 @@ def btn_today():
     timecreate = "1-day"
     timecreate = timecreate.split('-')
     if len(timecreate) > 1:
-        timestamp = clock.return_start_time(int(timecreate[0]), timecreate[1])
+        timestamp = clock.return_start_time(1, "day")
     else:
-        timestamp = clock.return_start_date(timecreate[0])
+        timestamp = clock.return_start_date(1)
 
     tasks = diary.return_tasks(timestamp, "", "", "", "")
+    print(tasks)
     textfield.delete(1.0, END)
     for t in tasks:
         if markdown == 1:
@@ -297,13 +301,22 @@ descrip=Entry(entries, width=50)
 descrip.grid(column=1,row=0)
 descrip.focus()
 
-ttype=Entry(entries, width=50)
+tasks = ["", "manual testing", "review", "bug verification", "bug reporting", "meeting", "study", "test development", "organisational", "development", "documentation"]
+selected_task = StringVar(entries)
+selected_task.set("")
+ttype=OptionMenu(entries, selected_task, *tasks)
 ttype.grid(column=1,row=1, sticky=(W))
 
-pgroup=Entry(entries, width=50)
+projects = ["", "openqa", "gnome", "kde", "relval", "code", "tools", "general", "commonbugs"]
+selected_project = StringVar(entries)
+selected_project.set("")
+pgroup=OptionMenu(entries, selected_project, *projects)
 pgroup.grid(column=1,row=2, sticky=(W))
 
-qasection=Entry(entries, width=50)
+sections = ["", "fedora", "cpe", "redhat", "external"]
+selected_section = StringVar(entries)
+selected_section.set("")
+qasection=OptionMenu(entries, selected_section, *sections)
 qasection.grid(column=1,row=3, sticky=(W))
 
 keywords=Entry(entries, width=50)
@@ -329,8 +342,12 @@ textfield.grid(column=0, row=0)
 Label(entries, text='History units:', font=('arial', 12, 'normal')).grid(column=0,row=6, sticky=(W))
 Label(entries, text='Number of units:', font=('arial', 12, 'normal')).grid(column=0,row=7, sticky=(W))
 
-# This is the section of code which creates a listbox
-unittype = Entry(entries, width=50)
+# This is the section of code which creates an option menu
+#FIXME
+units = ["", "minute", "hour", "day", "week", "month", "year"]
+selected_unit = StringVar(entries)
+selected_unit.set("")
+unittype = OptionMenu(entries, selected_unit, *units)
 unittype.grid(column=1, row=6, sticky=(W))
 
 unitnumber = Entry(entries, width=50)
