@@ -26,6 +26,10 @@ class Timer:
             "month": 2635200,
             "year": 31536000,
         }
+        if not count:
+            count = 1
+        if not unit:
+            unit = 'day'
         timeback = count * periods[unit]
         return round(self.timestamp - int(timeback))
 
@@ -161,27 +165,31 @@ def btn_save():
     # Collect the date from the form
     value_desc = descrip.get()
     descrip.delete(0, END)
-    value_ttype = str(selected_task.get())
-    value_pgroup = str(selected_project.get())
-    value_qasection = str(selected_section.get())
-    value_keywords = keywords.get()
-    keywords.delete(0, END)
-    value_link = link.get()
-    value_link = unpack_link(value_link)
-    link.delete(0, END)
-    descrip.focus()
-    # Create the entry
-    dentry = Dentry()
-    timestamp = clock.current_timestamp()
-    dentry.create(timestamp, value_desc, value_ttype, value_pgroup, value_qasection, value_keywords, value_link)
-    # Save into the file
-    diary.append_file(dentry.json())
-    textfield.delete(1.0, END)
-    textfield.insert(END, f"Task '{value_desc[:15]}...' was succesfully saved.\n")
-    # Delete selected
-    selected_task.set("")
-    selected_project.set("")
-    selected_section.set("")
+    if not value_desc:
+        textfield.delete(1.0, END)
+        textfield.insert(END, "No description was provided, task was not saved.")
+    else:
+        value_ttype = str(selected_task.get())
+        value_pgroup = str(selected_project.get())
+        value_qasection = str(selected_section.get())
+        value_keywords = keywords.get()
+        keywords.delete(0, END)
+        value_link = link.get()
+        value_link = unpack_link(value_link)
+        link.delete(0, END)
+        descrip.focus()
+        # Create the entry
+        dentry = Dentry()
+        timestamp = clock.current_timestamp()
+        dentry.create(timestamp, value_desc, value_ttype, value_pgroup, value_qasection, value_keywords, value_link)
+        # Save into the file
+        diary.append_file(dentry.json())
+        textfield.delete(1.0, END)
+        textfield.insert(END, f"Task '{value_desc[:15]}...' was succesfully saved.\n")
+        # Delete selected
+        selected_task.set("")
+        selected_project.set("")
+        selected_section.set("")
 
 
 # this is the function called when the button is clicked
@@ -262,6 +270,21 @@ def btn_copy():
     root.clipboard_append(textcopy)
     root.update() # now it stays on the clipboard after the window is closed
 
+def load_choices():
+    choices = {}
+    with open('choices.txt', 'r') as chFile:
+        content = chFile.readlines()
+    for line in content:
+        group, items = line.split(':')
+        listed = items.split(',')
+        listed = [item.strip() for item in listed]
+        listed.sort()
+        listed.append("")
+        choices[group] = listed
+    return choices
+
+
+
 root = Tk()
 
 # This is the section of code which creates the main window
@@ -284,13 +307,14 @@ text.grid(column=1,row=0, padx=5, pady=5, rowspan=2)
 search = Frame(root)
 search.grid(column=0, row=1, padx=5, pady=5)
 
+choices = load_choices()
 
 # This is the section of code which creates the a label
 Label(entries, text='Task description:', font=('arial', 12, 'normal')).grid(column=0,row=0, sticky=(W))
 Label(entries, text='Task type:', font=('arial', 12, 'normal')).grid(column=0,row=1, sticky=(W))
-Label(entries, text='Task Project group:', font=('arial', 12, 'normal')).grid(column=0,row=2, sticky=(W))
-Label(entries, text='Fedora QA section:', font=('arial', 12, 'normal')).grid(column=0,row=3, sticky=(W))
-Label(entries, text='Task Keywords:', font=('arial', 12, 'normal')).grid(column=0,row=4, sticky=(W))
+Label(entries, text='Task target:', font=('arial', 12, 'normal')).grid(column=0,row=2, sticky=(W))
+Label(entries, text='Task group:', font=('arial', 12, 'normal')).grid(column=0,row=3, sticky=(W))
+Label(entries, text='Additional keywords:', font=('arial', 12, 'normal')).grid(column=0,row=4, sticky=(W))
 Label(entries, text='Link to task:', font=('arial', 12, 'normal')).grid(column=0,row=5, sticky=(W))
 
 
@@ -299,19 +323,31 @@ descrip=Entry(entries, width=50)
 descrip.grid(column=1,row=0)
 descrip.focus()
 
-tasks = ["", "manual testing", "review", "bug verification", "bug reporting", "meeting", "study", "test development", "organisational", "development", "documentation"]
+try:
+    tasks = choices['tasks']
+except KeyError:
+    tasks = [""]
+
 selected_task = StringVar(entries)
 selected_task.set("")
 ttype=OptionMenu(entries, selected_task, *tasks)
 ttype.grid(column=1,row=1, sticky=(W))
 
-projects = ["", "openqa", "gnome", "kde", "relval", "code", "tools", "general", "commonbugs"]
+try:
+    projects = choices['group']
+except KeyError:
+    projects = [""]
+
 selected_project = StringVar(entries)
 selected_project.set("")
 pgroup=OptionMenu(entries, selected_project, *projects)
 pgroup.grid(column=1,row=2, sticky=(W))
 
-sections = ["", "fedora", "cpe", "redhat", "external"]
+try:
+    sections = choices['section']
+except KeyError:
+    sections = [""]
+
 selected_section = StringVar(entries)
 selected_section.set("")
 qasection=OptionMenu(entries, selected_section, *sections)
