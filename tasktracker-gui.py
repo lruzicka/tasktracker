@@ -12,7 +12,7 @@ from tkinter import *
 
 class Timer:
     def __init__(self):
-        pass
+        self.timestamp = round(time.time())
 
     def return_start_time(self, count, unit):
         """ Returns the time from epoch calculated from the current timestamp back in time.
@@ -37,7 +37,8 @@ class Timer:
 
     def current_timestamp(self):
         """ Returns current timestamp. """
-        return time.time()
+        self.timestamp = round(time.time())
+        return self.timestamp
 
 class Diary:
     def __init__(self, dfile):
@@ -63,7 +64,6 @@ class Diary:
     def return_tasks(self, timestamp=None, typ=None, group=None, qa=None, keywords=None, link=None):
         specs = []
         results = self.diary[:]
-        print(results)
         part = []
         if timestamp:
             for task in results:
@@ -230,7 +230,6 @@ def btn_today():
         timestamp = clock.return_start_date(1)
 
     tasks = diary.return_tasks(timestamp, "", "", "", "")
-    print(tasks)
     textfield.delete(1.0, END)
     for t in tasks:
         if markdown == 1:
