@@ -193,8 +193,7 @@ def btn_show():
     value_keywords = keywords.get()
     keywords.delete(0, END)
     value_unit = str(selected_unit.get())
-    value_number = unitnumber.get()
-    unitnumber.delete(0, END)
+    value_number = str(selected_number.get())
     markdown = markbool.get()
     ttype.focus()
     timecreate = f"{value_number}-{value_unit}"
@@ -342,14 +341,16 @@ Label(entries, text='History units:', font=('arial', 12, 'normal')).grid(column=
 Label(entries, text='Number of units:', font=('arial', 12, 'normal')).grid(column=0,row=7, sticky=(W))
 
 # This is the section of code which creates an option menu
-#FIXME
 units = ["", "minute", "hour", "day", "week", "month", "year"]
 selected_unit = StringVar(entries)
 selected_unit.set("")
 unittype = OptionMenu(entries, selected_unit, *units)
 unittype.grid(column=1, row=6, sticky=(W))
 
-unitnumber = Entry(entries, width=50)
+numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+selected_number = StringVar(entries)
+selected_number.set("1")
+unitnumber = OptionMenu(entries, selected_number, *numbers)
 unitnumber.grid(column=1, row=7, sticky=(W))
 
 # This is the section of code which creates a checkbox
