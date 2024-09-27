@@ -1,3 +1,3 @@
 tasks: test, review, report, verify, document, meet, study, develop, vote, answer, help
-group: gnome, kde, bug, issue, team, colleagues, code, test, openqa, python, perl
+group: gnome, kde, bug, issue, team, colleagues, code, test, openqa, python, perl, update, fix
 section: fedora, redhat, cpe, external
