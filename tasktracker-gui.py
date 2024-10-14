@@ -7,6 +7,7 @@ import time
 import sys
 
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk
 from tkinter import *
 
@@ -271,8 +272,10 @@ def btn_copy():
     root.update() # now it stays on the clipboard after the window is closed
 
 def load_choices():
+    home = Path.home()
+    choice_file = f"{home}/.config/tasktracker/choices.txt"
     choices = {}
-    with open('choices.txt', 'r') as chFile:
+    with open(choice_file, 'r') as chFile:
         content = chFile.readlines()
     for line in content:
         group, items = line.split(':')
@@ -282,8 +285,6 @@ def load_choices():
         listed.append("")
         choices[group] = listed
     return choices
-
-
 
 root = Tk()
 
